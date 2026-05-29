@@ -1,39 +1,44 @@
+const express = require("express");
+const router = express.Router();
 
-router.post("/classificar", (req, res)=>{
 
-    // recuperar dados do formulário
-    let nota1 = parseFloat(req.body.nota1);
-    let nota2 = parseFloat(req.body.nota2);
+router.get("/", (req, res)=>{
+    res.render("pages/index", {
+        "retorno": null,
+        "valores":{"salario":""}
+    });
+})
 
-    // calcular média
-    let media = (nota1 + nota2) / 2;
 
-    // realizar a manipulação
-    if(media > 9 && media <= 10){
-        var conceito = "A";
-    }else if(media > 7.5 && media <= 9){
-        var conceito = "B";
-    }else if(media > 6 && media <= 7.5){
-        var conceito = "C";
-    }else if(media > 4 && media <= 6){
-        var conceito = "D";
+router.post("/calcular", (req, res)=>{
+
+    let salario = parseFloat(req.body.salario);
+
+    if(salario <= 1400){
+        var percentual = 15;
+    }else if(salario > 1400 && salario <= 4500){
+        var percentual = 10;
+    }else if(salario > 4500 && salario <= 10000){
+        var percentual = 7.5;
     }else{
-        var conceito = "E";
+        var percentual = 5;
     }
 
-    // formatar os dados resultantes
-    let objJson = {
-        "media": media.toFixed(2),
-        "conceito": conceito
-    }
+   let aumento = salario * (percentual / 100);
 
-    // enviar os dados para mesclar com o html
+let novoSalario = salario + aumento;
+
+let objJson = {
+    "salario": salario.toFixed(2),
+    "percentual": percentual,
+    "aumento": aumento.toFixed(2),
+    "novoSalario": novoSalario.toFixed(2)
+}
+
+    
     res.render("pages/index", {
         "retorno": objJson,
-        "valores":{
-            "nota1": req.body.nota1,
-            "nota2": req.body.nota2
-        }
+        "valores":{"salario": req.body.salario}
     })
 
 })
